@@ -13,7 +13,8 @@ SQLITE3_BIN    := /usr/local/sqlite-3.31.1a/bin/sqlite3
 .DEFAULT_GOAL  := fgrep
 
 $(HASHES_7Z):
-	aria2c --file-allocation=falloc $(HASHES_URL)
+	### very slow, avoid if you can
+	aria2c --follow-torrent=mem -d . --seed-time=0 --file-allocation=falloc $(HASHES_URL)
 
 $(HASHES_TEXT): $(HASHES_7Z)
 	### very slow, avoid if you can
@@ -47,6 +48,7 @@ methodA: $(HASHES_DATA)
 
 .ONESHELL:
 sqlite3A/hashes.sqlite3: $(HASHES_DATA)
+	mkdir -p sqlite3A
 	-$(RM) $@
 	#sqlite3 $@ "create table textTable (hashnum TEXT);"
 	$(SQLITE3_BIN) $@ "create table numericTable (hashnum NUMERIC);"
